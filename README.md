@@ -8,7 +8,7 @@ Seq2seq for Aspect Sentiment Triplet Extraction
 
 - aspect term: 情感所针对的目标对象，一般是被评价实体的某个方面项，常被称作方面词、属性词
 - opinion term: 具体表达情感的词或短语，常被称作情感词
-- sentiment polarity: 用户针对aspect term所表达的情感倾向，类别空间为`{POS, NEG, 'NEU'}`
+- sentiment polarity: 用户针对aspect term所表达的情感倾向，类别空间为`{POS, NEG, NEU}`
 
 <div align="center"> <img src="https://user-images.githubusercontent.com/9134454/199022562-2cca1c06-b91e-4e4b-8bf0-20273a16821e.png" alt="ASTE" width="50%" /></div>
 
