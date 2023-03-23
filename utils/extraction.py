@@ -92,21 +92,26 @@ class DataCollator:
         if 'triplets_seq' in example:
             return example['triplets_seq']
 
-        triplets_seq = []
-        for triplet in sorted(
-            example['triplets'],
-            key=lambda t: (t['aspect'][0], t['opinion'][0])
-        ):  
-            triplet_seq = (
-                triplet['aspect'][-1] + 
-                sep1 + 
-                triplet['opinion'][-1] + 
-                sep1 + 
-                sentiment_to_word(triplet['sentiment'])
-            )
-            triplets_seq.append(triplet_seq)
+        return make_triplets_seq(example)
 
-        return sep2.join(triplets_seq)
+
+
+def make_triplets_seq(example):
+    triplets_seq = []
+    for triplet in sorted(
+        example['triplets'],
+        key=lambda t: (t['aspect'][0], t['opinion'][0])
+    ):  
+        triplet_seq = (
+            triplet['aspect'][-1] + 
+            sep1 + 
+            triplet['opinion'][-1] + 
+            sep1 + 
+            sentiment_to_word(triplet['sentiment'])
+        )
+        triplets_seq.append(triplet_seq)
+
+    return sep2.join(triplets_seq)
 
 
 
@@ -128,8 +133,12 @@ class DataModule(pl.LightningDataModule):
         self.max_seq_length     = max_seq_length
         self.train_batch_size   = train_batch_size
         self.eval_batch_size    = eval_batch_size
-        self.data_dir           = os.path.join(data_dir, dataset)
-        self.seed               = seed        
+        self.seed               = seed
+
+        if dataset != '':
+            self.data_dir       = os.path.join(data_dir, dataset)
+        else:
+            self.data_dir       = data_dir
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
@@ -148,7 +157,23 @@ class DataModule(pl.LightningDataModule):
         print('Dev',   len(self.raw_datasets['dev']))
         print('Test',  len(self.raw_datasets['test']))
 
-    def load_predict_dataset(self):
+    def load_predict_dataset(self, version):
+        if version == 'v1':
+            self.load_predict_dataset_v1()
+        elif version == 'v2':
+            self.load_predict_dataset_v2()
+
+    def load_predict_dataset_v1(self):
+        examples = load_json(self.data_dir)
+        for example in examples:
+            example['triplets_seq'] = make_triplets_seq(example)
+
+        self.raw_datasets = {'predict': examples}
+
+        print('-----------data statistic-------------')
+        print('Predict', len(self.raw_datasets['predict']))
+
+    def load_predict_dataset_v2(self, max_example_num=20_000):
 
         import re 
         import spacy 
@@ -183,6 +208,8 @@ class DataModule(pl.LightningDataModule):
                         'sentence': sentence
                     }
                     predict_examples.append(new_example)
+                    if len(predict_examples) >= max_example_num:
+                        break
 
         self.raw_datasets = {'predict': predict_examples}
 
