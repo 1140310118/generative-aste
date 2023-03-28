@@ -1,6 +1,6 @@
 # bash/train_extractor.sh -d 14res
 
-while getopts ':d:c:b:s:l:o' opt
+while getopts ':d:c:b:s:l:o:' opt
 do
     case $opt in
         d)
