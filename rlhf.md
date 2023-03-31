@@ -60,4 +60,7 @@ seed=42
 
 <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/rlhf/rlhf.png" alt="img" style="zoom:40%;" />
 
-1. 使用PPO的框架训练抽取器，参考 https://github.com/juncongmoo/chatllama
+1. 使用PPO的框架训练抽取器，参考 
+	1. https://github.com/juncongmoo/chatllama
+	2. https://huggingface.co/blog/deep-rl-ppo
+	3. https://www.mathworks.com/help/reinforcement-learning/ug/ppo-agents.html
